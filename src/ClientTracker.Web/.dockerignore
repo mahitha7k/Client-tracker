@@ -1,0 +1,6 @@
+node_modules
+dist
+.cert
+.env
+.env.local
+*.log

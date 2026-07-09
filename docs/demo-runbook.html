@@ -1,0 +1,579 @@
+<title>Client Engagement Tracker — Demo Runbook</title>
+<style>
+  :root {
+    --ink: #131a22;
+    --paper: #f3f4f1;
+    --surface: #ffffff;
+    --accent: #c2703c;
+    --accent-ink: #ffffff;
+    --accent-2: #4f7370;
+    --muted: #5b6672;
+    --line: #d8d9d4;
+    --code-bg: #eceae3;
+    --good: #3f7d5c;
+    --shadow: 0 1px 2px rgba(19, 26, 34, 0.06), 0 8px 24px rgba(19, 26, 34, 0.05);
+  }
+  :root[data-theme="dark"] {
+    --ink: #eef0f2;
+    --paper: #12161b;
+    --surface: #191f26;
+    --accent: #e08a52;
+    --accent-ink: #17110b;
+    --accent-2: #8fb8b3;
+    --muted: #9aa5b1;
+    --line: #2b323b;
+    --code-bg: #10151b;
+    --good: #6fbd93;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ink: #eef0f2;
+      --paper: #12161b;
+      --surface: #191f26;
+      --accent: #e08a52;
+      --accent-ink: #17110b;
+      --accent-2: #8fb8b3;
+      --muted: #9aa5b1;
+      --line: #2b323b;
+      --code-bg: #10151b;
+      --good: #6fbd93;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .mono {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, "Liberation Mono", monospace;
+  }
+
+  a { color: var(--accent-2); }
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  .wrap {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+  }
+
+  /* ---------- Header ---------- */
+  header.hero {
+    margin-bottom: 48px;
+  }
+  .eyebrow {
+    font-family: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-family: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
+    font-weight: 700;
+    font-size: clamp(30px, 4.6vw, 44px);
+    line-height: 1.08;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  .dek {
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 56ch;
+    margin: 0 0 28px;
+    text-wrap: balance;
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 7px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    font-size: 13.5px;
+    color: var(--ink);
+    box-shadow: var(--shadow);
+  }
+  .chip b { color: var(--accent); font-weight: 700; }
+
+  /* ---------- Section headings ---------- */
+  section { margin: 56px 0; }
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+  }
+  h2 {
+    font-family: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 22px;
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+  .section-note {
+    font-size: 13.5px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  /* ---------- Architecture diagram ---------- */
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 28px 24px;
+    box-shadow: var(--shadow);
+  }
+  .diagram-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .box {
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 16px;
+    background: var(--paper);
+    text-align: center;
+    min-width: 130px;
+  }
+  .box .name { font-weight: 700; font-size: 14px; }
+  .box .role { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .box.accent { border-color: var(--accent); }
+  .arrow {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--muted);
+    font-size: 11px;
+    min-width: 68px;
+  }
+  .arrow .line { width: 100%; height: 1px; background: var(--muted); position: relative; margin: 3px 0; }
+  .arrow .line::after {
+    content: "";
+    position: absolute; right: -1px; top: -3px;
+    border: 4px solid transparent;
+    border-left-color: var(--muted);
+  }
+  .boundary {
+    margin-top: 18px;
+    border: 1.5px dashed var(--accent-2);
+    border-radius: 10px;
+    padding: 18px 16px 14px;
+    position: relative;
+  }
+  .boundary-label {
+    position: absolute;
+    top: -11px;
+    left: 14px;
+    background: var(--surface);
+    padding: 0 8px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--accent-2);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .boundary .diagram-row { gap: 20px; }
+
+  /* ---------- Run of show ---------- */
+  .runbook {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .phase {
+    display: grid;
+    grid-template-columns: 78px 1fr;
+    gap: 20px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line);
+  }
+  .phase:last-child { border-bottom: 1px solid var(--line); }
+  .phase-time {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    padding-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .phase-title {
+    font-family: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
+    font-weight: 700;
+    font-size: 16.5px;
+    margin: 0 0 10px;
+  }
+  .say, .do, .point {
+    margin: 0 0 10px;
+    font-size: 14.5px;
+  }
+  .say { color: var(--ink); }
+  .say::before, .do::before, .point::before {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-bottom: 3px;
+  }
+  .say::before { content: "Say"; color: var(--accent-2); }
+  .do::before { content: "Do"; color: var(--accent); }
+  .point::before { content: "Point out"; }
+  .say q { quotes: "\201C" "\201D"; font-style: italic; }
+  .do ol { margin: 4px 0 0; padding-left: 20px; }
+  .do li { margin-bottom: 4px; }
+  code {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    background: var(--code-bg);
+    padding: 1.5px 6px;
+    border-radius: 4px;
+    font-size: 0.92em;
+  }
+
+  /* ---------- Security grid ---------- */
+  .sec-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .sec-card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 18px 18px 16px;
+    box-shadow: var(--shadow);
+  }
+  .sec-card .tick {
+    color: var(--good);
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sec-card h3 {
+    font-size: 14.5px;
+    margin: 0 0 6px;
+    font-family: "Segoe UI Semibold", "Segoe UI", system-ui, sans-serif;
+  }
+  .sec-card p { margin: 0; font-size: 13.5px; color: var(--muted); }
+
+  /* ---------- Q&A ---------- */
+  .qa { display: flex; flex-direction: column; gap: 18px; }
+  .qa-item dt {
+    font-weight: 700;
+    font-size: 14.5px;
+    margin-bottom: 5px;
+  }
+  .qa-item dt::before {
+    content: "Q ";
+    color: var(--accent);
+  }
+  .qa-item dd {
+    margin: 0;
+    font-size: 14.5px;
+    color: var(--muted);
+    padding-left: 18px;
+    border-left: 2px solid var(--line);
+  }
+
+  /* ---------- Appendix ---------- */
+  .cmd-block {
+    background: var(--code-bg);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px 16px;
+    overflow-x: auto;
+  }
+  .cmd-block .line {
+    font-family: ui-monospace, "Cascadia Code", "SF Mono", Consolas, monospace;
+    font-size: 13px;
+    white-space: pre;
+    color: var(--ink);
+    margin: 0 0 8px;
+  }
+  .cmd-block .line:last-child { margin-bottom: 0; }
+  .cmd-block .comment { color: var(--muted); }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 20px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  @media (max-width: 560px) {
+    .wrap { padding: 36px 16px 72px; }
+    .phase { grid-template-columns: 1fr; gap: 6px; }
+    .phase-time { padding-top: 0; }
+    .sec-grid { grid-template-columns: 1fr; }
+    .diagram-row { flex-direction: column; }
+    .arrow { flex-direction: row; min-width: 0; width: 100%; padding: 2px 0; }
+    .arrow .line { height: auto; width: 24px; }
+    .arrow .line::after { right: -3px; top: -4px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { scroll-behavior: auto !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <p class="eyebrow">Demo Runbook</p>
+    <h1>Client Engagement Tracker</h1>
+    <p class="dek">A 10–15 minute walkthrough script: what to say, what to click, and what to point at — covering the live app, the security model, and the cloud infrastructure behind it.</p>
+    <div class="meta-row">
+      <span class="chip">⏱ <b>12–15 min</b> total</span>
+      <span class="chip">🔐 Azure&nbsp;AD sign-in required</span>
+      <span class="chip">☁️ Live on Azure Container Apps</span>
+    </div>
+  </header>
+
+  <section id="stack">
+    <div class="section-head">
+      <h2>At a glance</h2>
+      <span class="section-note">what it's built with</span>
+    </div>
+    <div class="meta-row">
+      <span class="chip">React 19 + TypeScript</span>
+      <span class="chip">Vite + Tailwind CSS</span>
+      <span class="chip">.NET 8 Web API</span>
+      <span class="chip">Dapper + MySQL</span>
+      <span class="chip">Microsoft Entra ID (Azure AD)</span>
+      <span class="chip">Docker</span>
+      <span class="chip">Azure Container Apps</span>
+    </div>
+  </section>
+
+  <section id="architecture">
+    <div class="section-head">
+      <h2>Architecture</h2>
+      <span class="section-note">30-second version</span>
+    </div>
+    <div class="diagram">
+      <div class="diagram-row">
+        <div class="box">
+          <div class="name">Browser</div>
+          <div class="role">signed-in user</div>
+        </div>
+        <div class="arrow"><span>sign in</span><div class="line"></div></div>
+        <div class="box accent">
+          <div class="name">Microsoft Entra ID</div>
+          <div class="role">issues access token</div>
+        </div>
+      </div>
+
+      <div class="boundary">
+        <span class="boundary-label">Azure Container Apps</span>
+        <div class="diagram-row">
+          <div class="box">
+            <div class="name">React SPA</div>
+            <div class="role">nginx · static build</div>
+          </div>
+          <div class="arrow"><span>Bearer token</span><div class="line"></div></div>
+          <div class="box">
+            <div class="name">.NET 8 API</div>
+            <div class="role">validates token + scope</div>
+          </div>
+          <div class="arrow"><span>Dapper / TLS</span><div class="line"></div></div>
+          <div class="box">
+            <div class="name">MySQL</div>
+            <div class="role">Flexible Server</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="run-of-show">
+    <div class="section-head">
+      <h2>Run of show</h2>
+      <span class="section-note">follow top to bottom</span>
+    </div>
+    <div class="runbook">
+
+      <div class="phase">
+        <div class="phase-time">0:00</div>
+        <div>
+          <p class="phase-title">Open</p>
+          <p class="say"><q>This is Client Engagement Tracker — an internal tool for tracking client engagements and risk across active accounts. I built the API, the frontend, the cloud sign-in, and the deployment pipeline for it end to end.</q></p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-time">1:00</div>
+        <div>
+          <p class="phase-title">Architecture, 30 seconds</p>
+          <p class="say"><q>The browser signs in with Microsoft, gets a token, and sends it on every API call. The API checks that token before it answers. Both the site and the API run as containers in Azure; the database is a managed MySQL server.</q></p>
+          <p class="point">Trace the diagram above as you say it — left to right, then into the dashed box.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-time">3:00</div>
+        <div>
+          <p class="phase-title">Live walkthrough</p>
+          <p class="do">
+            <ol>
+              <li>Open the Web URL (see appendix) — point out it's already on HTTPS with a real Azure address, no custom setup.</li>
+              <li>Click <strong>Sign in with Microsoft</strong> — you land on the actual Microsoft login page.</li>
+              <li>Sign in. You're redirected straight back into the app, now showing the client list.</li>
+              <li>Scroll the three seeded clients — Contoso Bank, Fabrikam Health, Northwind Retail — each with its engagements and a status badge (Active / Planned / On Hold).</li>
+            </ol>
+          </p>
+          <p class="point">This is real data returned from the API after a real login — nothing on this screen is mocked.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-time">8:00</div>
+        <div>
+          <p class="phase-title">Prove the security is real</p>
+          <p class="do">Open DevTools → Network tab, click the <code>/api/clients</code> request, show the <code>Authorization: Bearer …</code> header.</p>
+          <p class="say"><q>That token is what the API actually checks — this isn't just a login screen bolted on the front. If I strip the token out, watch what happens.</q></p>
+          <p class="do">Switch to a terminal and run the <code>curl</code> command from the appendix — it comes back <code>401 Unauthorized</code>.</p>
+          <p class="point">The API refuses to answer <em>anyone</em> without a valid token, regardless of whether they know the URL.</p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-time">11:00</div>
+        <div>
+          <p class="phase-title">Cloud infrastructure tour</p>
+          <p class="do">Switch to the Azure Portal, resource group <code>rg-clienttracker</code>.</p>
+          <p class="point">
+            Two Container Apps (API + Web) — scale down when idle, so you only pay for what's used · a Container Registry holding the built images · a managed MySQL Flexible Server that Azure patches and backs up · the two Entra ID app registrations behind the sign-in.
+          </p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-time">13:00</div>
+        <div>
+          <p class="phase-title">How it ships</p>
+          <p class="say"><q>Both apps are Dockerized. Standing up the infrastructure and deploying new versions is two scripts — one for one-time setup, one for repeatable builds — so there's no manual clicking through the Portal and nothing that only exists in my head.</q></p>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="phase-time">14:00</div>
+        <div>
+          <p class="phase-title">Wrap up</p>
+          <p class="say"><q>So: real cloud sign-in, an API that actually enforces it, and a deployment that's repeatable rather than one-off. Happy to go deeper into any piece — questions?</q></p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="security">
+    <div class="section-head">
+      <h2>Security, in case it comes up</h2>
+      <span class="section-note">have these ready</span>
+    </div>
+    <div class="sec-grid">
+      <div class="sec-card">
+        <div class="tick">✓ Standard, not homemade</div>
+        <h3>OAuth 2.0 + PKCE</h3>
+        <p>The browser never holds a client secret — it's the same auth-code flow banks and enterprise apps use for single-page apps.</p>
+      </div>
+      <div class="sec-card">
+        <div class="tick">✓ Least privilege</div>
+        <h3>Two app registrations</h3>
+        <p>The API and the website are registered separately in Entra ID, so the site only ever gets access scoped to this one API.</p>
+      </div>
+      <div class="sec-card">
+        <div class="tick">✓ Enforced server-side</div>
+        <h3>The API checks, not just the UI</h3>
+        <p>Every request is validated against the signed token and its scope inside the API itself — a hidden URL isn't a way in.</p>
+      </div>
+      <div class="sec-card">
+        <div class="tick">✓ Encrypted in transit</div>
+        <h3>HTTPS end to end</h3>
+        <p>Both apps are HTTPS-only, and the database connection requires TLS — nothing crosses the network in the clear.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="qa">
+    <div class="section-head">
+      <h2>Anticipated questions</h2>
+      <span class="section-note">answers to have ready</span>
+    </div>
+    <dl class="qa">
+      <div class="qa-item">
+        <dt>Is this production-ready?</dt>
+        <dd>The core patterns are: real OAuth, containerized services, a managed database. Before a real go-live I'd add monitoring/alerting, an automated CI/CD pipeline, and backup/disaster-recovery testing.</dd>
+      </div>
+      <div class="qa-item">
+        <dt>What does it cost to run?</dt>
+        <dd>Container Apps bills on consumption and the database is on the smallest Burstable tier — at this traffic level it's close to idle cost, and scales with actual usage.</dd>
+      </div>
+      <div class="qa-item">
+        <dt>What happens if the API crashes?</dt>
+        <dd>Azure Container Apps restarts unhealthy containers automatically and can scale out under load — no manual intervention.</dd>
+      </div>
+      <div class="qa-item">
+        <dt>How hard would it be to add a new feature, like Risks?</dt>
+        <dd>The database table and the API's repository layer for risks already exist — surfacing it in the UI is a contained, well-scoped addition, not a rebuild.</dd>
+      </div>
+      <div class="qa-item">
+        <dt>Why MySQL instead of SQL Server?</dt>
+        <dd>Matched to the schema this project started from. The data-access layer is written against a repository interface, not tied to MySQL specifically.</dd>
+      </div>
+    </dl>
+  </section>
+
+  <section id="appendix">
+    <div class="section-head">
+      <h2>Appendix — copy/paste for the demo</h2>
+      <span class="section-note">have these open in tabs beforehand</span>
+    </div>
+    <div class="cmd-block">
+      <p class="line"><span class="comment"># Web app (sign in here)</span></p>
+      <p class="line">https://clienttracker-web.agreeableisland-288c8f92.eastus.azurecontainerapps.io</p>
+      <p class="line"><span class="comment"># API (used for the DevTools + curl steps)</span></p>
+      <p class="line">https://clienttracker-api.agreeableisland-288c8f92.eastus.azurecontainerapps.io</p>
+      <p class="line"><span class="comment"># Proves the API rejects requests with no token -&gt; 401 Unauthorized</span></p>
+      <p class="line">curl -i https://clienttracker-api.agreeableisland-288c8f92.eastus.azurecontainerapps.io/api/clients</p>
+    </div>
+  </section>
+
+  <footer>
+    Client Engagement Tracker — internal demo runbook.
+  </footer>
+
+</div>
